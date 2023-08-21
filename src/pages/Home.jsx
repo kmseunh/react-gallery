@@ -29,7 +29,7 @@ const Home = () => {
     }, []);
 
     return (
-        <div>
+        <div className='image-background'>
             <PhotoList photos={photos} />
         </div>
     );
