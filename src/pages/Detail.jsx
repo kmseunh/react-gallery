@@ -1,14 +1,74 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Footer from '../components/Footer';
 
 const Detail = () => {
     const param = useParams();
-    console.log(param);
+    const [photo, setPhoto] = useState();
+
+    useEffect(() => {
+        const Access_Key = 'WGLIaeuwXsRAO2p4Cqj5jP43s4G6tkacH_5kf8AQF24';
+
+        const fetchPhoto = async () => {
+            try {
+                const res = await axios.get(
+                    `https://api.unsplash.com/photos/${param.id}`,
+                    {
+                        params: {
+                            client_id: Access_Key,
+                        },
+                    }
+                );
+                const {
+                    user,
+                    alt_description,
+                    description,
+                    urls,
+                    views,
+                    downloads,
+                    likes,
+                    created_at,
+                } = res.data;
+
+                const year = new Date(created_at).getFullYear();
+
+                const photoData = {
+                    user,
+                    alt_description,
+                    description,
+                    urls,
+                    views,
+                    downloads,
+                    likes,
+                    year,
+                };
+                setPhoto(photoData);
+            } catch (error) {
+                console.error('사진을 불러오는 중 오류 발생:', error);
+            }
+        };
+        fetchPhoto();
+    }, [param.id]);
 
     return (
         <div>
-            <h2>Photo Detail Page</h2>
-            <p>Photo ID: {param.id}</p>
+            {photo && (
+                <div>
+                    <h1>
+                        Title: {photo.alt_description} ({photo.year})
+                    </h1>
+                    <img
+                        src={photo.urls.small}
+                        alt={photo.description || 'Photo'}
+                    />
+                    <p>{photo.description || ''}</p>
+                    <p>Views: {photo.views}</p>
+                    <p>Downloads: {photo.downloads}</p>
+                    <p>Likes: {photo.likes}</p>
+                </div>
+            )}
+            <Footer />
         </div>
     );
 };
