@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Footer from '../components/Footer';
 
 const Detail = () => {
     const param = useParams();
@@ -52,23 +51,27 @@ const Detail = () => {
     }, [param.id]);
 
     return (
-        <div>
+        <div className='detail-background'>
             {photo && (
                 <div>
                     <h1>
-                        Title: {photo.alt_description} ({photo.year})
+                        {photo.alt_description} ({photo.year})
                     </h1>
                     <img
                         src={photo.urls.small}
                         alt={photo.description || 'Photo'}
+                        style={{ width: '37.5rem' }}
                     />
-                    <p>{photo.description || ''}</p>
-                    <p>Views: {photo.views}</p>
-                    <p>Downloads: {photo.downloads}</p>
-                    <p>Likes: {photo.likes}</p>
+                    <div className='img-explan'>
+                        <p>{photo.description || ''}</p>
+                        <div className='img-stats'>
+                            <small>Views: {photo.views}</small>
+                            <small>Downloads: {photo.downloads}</small>
+                            <small>Likes: {photo.likes}</small>
+                        </div>
+                    </div>
                 </div>
             )}
-            <Footer />
         </div>
     );
 };
