@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import PhotoList from '../components/PhotoList';
 
 const Home = () => {
     const [photos, setPhotos] = useState([]);
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         const Access_Key = 'WGLIaeuwXsRAO2p4Cqj5jP43s4G6tkacH_5kf8AQF24';
@@ -15,7 +16,8 @@ const Home = () => {
                     {
                         params: {
                             client_id: Access_Key,
-                            count: 30,
+                            count: 6,
+                            page: page,
                         },
                     }
                 );
@@ -26,11 +28,23 @@ const Home = () => {
         };
 
         fetchPhotos();
-    }, []);
+    }, [page]);
+
+    const prevPage = () => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    };
 
     return (
         <div className='image-background'>
             <PhotoList photos={photos} />
+            {page > 1 && (
+                <button onClick={() => prevPage()}>Previous Page</button>
+            )}
+            <button onClick={() => setPage((prevPage) => prevPage + 1)}>
+                Next Page
+            </button>
         </div>
     );
 };
