@@ -1,34 +1,58 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPhotos } from '../redux/photosSlice';
 import PhotoList from '../components/PhotoList';
+import { fetchRandomPhotos } from '../api';
+import styled from 'styled-components';
+
+const StyledButton = styled.button`
+    margin-top: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+`;
+
+// Styled components for Home
+const StyledImageBackground = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 98vh;
+`;
+
+const StyledButtonContainer = styled.div`
+    position: absolute;
+    bottom: 12rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+`;
 
 const Home = () => {
-    const [photos, setPhotos] = useState([]);
+    const dispatch = useDispatch();
+    const photos = useSelector((state) => state.photos);
     const [page, setPage] = useState(1);
 
     useEffect(() => {
-        const Access_Key = 'WGLIaeuwXsRAO2p4Cqj5jP43s4G6tkacH_5kf8AQF24';
-
         const fetchPhotos = async () => {
             try {
-                const response = await axios.get(
-                    'https://api.unsplash.com/photos/random',
-                    {
-                        params: {
-                            client_id: Access_Key,
-                            count: 6,
-                            page: page,
-                        },
-                    }
-                );
-                setPhotos(response.data);
+                const response = await fetchRandomPhotos(6, page);
+                dispatch(setPhotos(response));
             } catch (error) {
                 console.error('사진을 불러오는 중 오류 발생:', error);
             }
         };
 
         fetchPhotos();
-    }, [page]);
+    }, [dispatch, page]);
 
     const prevPage = () => {
         if (page > 1) {
@@ -37,15 +61,21 @@ const Home = () => {
     };
 
     return (
-        <div className='image-background'>
+        <StyledImageBackground>
             <PhotoList photos={photos} />
-            {page > 1 && (
-                <button onClick={() => prevPage()}>Previous Page</button>
-            )}
-            <button onClick={() => setPage((prevPage) => prevPage + 1)}>
-                Next Page
-            </button>
-        </div>
+            <StyledButtonContainer>
+                {page > 1 && (
+                    <StyledButton onClick={prevPage}>
+                        Previous Page
+                    </StyledButton>
+                )}
+                <StyledButton
+                    onClick={() => setPage((prevPage) => prevPage + 1)}
+                >
+                    Next Page
+                </StyledButton>
+            </StyledButtonContainer>
+        </StyledImageBackground>
     );
 };
 
